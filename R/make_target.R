@@ -26,6 +26,23 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
   psych::scrub(target_mat, isvalue = 1)
 }
 
+#' ESEM EFA
+#' Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.
+#' @param data Raw Data.frame or matrix. \[Subjects x Items] data or covariance matrix.
+#' @param nfactors An integer. Number of factors to extract (including G when bifactor).
+#' @param target Target rotation matrix. Usually obtained with \cite{make_target()}.
+#' @param bifactor Logical. Set to TRUE if model is bifactor.
+#' @param fm Factor extraction method. Defaults to "Principal Axis", see \cite{psych::fa()}
+#' for alternatives.
+#' @param rotate Character vector. Factor rotation to use.
+#' Defaults to oblique target rotation ("targetQ"). Automatically set to
+#' orthogonal target rotation if `bifactor =TRUE`.
+#' @param ... Aditional parameters passed to \cite{psych::fa()}.
+#'
+#' @return \cite{psych::fa()} object with factor extraction results.
+#' @export
+#'
+#' @examples
 esem_efa <- function(data,  nfactors, target, bifactor = FALSE, fm = "pa", rotate = "targetQ",...){
   ifelse(bifactor
     ,esem_fit <- psych::fa(data, nfactors, fm = fm,
@@ -36,6 +53,3 @@ esem_efa <- function(data,  nfactors, target, bifactor = FALSE, fm = "pa", rotat
   esem_fit
 }
 
-make_loadings_dt <- function(fa_object, factor_names)
-
-syntax_composer <- function(efa_object){}
