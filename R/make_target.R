@@ -27,6 +27,7 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
 }
 
 #' ESEM EFA
+#'
 #' Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.
 #' @param data Raw Data.frame or matrix. \[Subjects x Items] data or covariance matrix.
 #' @param nfactors An integer. Number of factors to extract (including G when bifactor).
@@ -36,8 +37,9 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
 #' for alternatives.
 #' @param rotate Character vector. Factor rotation to use.
 #' Defaults to oblique target rotation ("targetQ"). Automatically set to
-#' orthogonal target rotation if `bifactor =TRUE`.
+#' orthogonal target rotation if `bifactor = TRUE`.
 #' @param ... Aditional parameters passed to \cite{psych::fa()}.
+#'
 #'
 #' @return \cite{psych::fa()} object with factor extraction results.
 #' @export

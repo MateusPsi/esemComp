@@ -2,8 +2,7 @@
 % Please edit documentation in R/make_target.R
 \name{esem_efa}
 \alias{esem_efa}
-\title{ESEM EFA
-Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.}
+\title{ESEM EFA}
 \usage{
 esem_efa(
   data,
@@ -37,6 +36,5 @@ orthogonal target rotation if \code{bifactor =TRUE}.}
 \cite{psych::fa()} object with factor extraction results.
 }
 \description{
-ESEM EFA
 Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.
 }
