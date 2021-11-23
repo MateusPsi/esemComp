@@ -2,3 +2,4 @@
 
 export(esem_efa)
 export(make_target)
+importFrom(data.table,":=")
