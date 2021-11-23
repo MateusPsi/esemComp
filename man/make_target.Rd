@@ -27,8 +27,10 @@ for each latent variable. See the vignette esem as efa for suggestions on how to
 }
 \examples{
 #target matrix for the Tucker dataset in the psych package
-make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
+main_loadings_list <- list(f1 = c(1,2,5:7),
+                           f2 = c(3,4,8,9))
+make_target(9, main_loadings_list)
 
 #bifactor matrix for the same dataset
-make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)),TRUE)
+make_target(9, main_loadings_list, TRUE)
 }

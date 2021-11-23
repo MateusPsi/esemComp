@@ -7,34 +7,70 @@
 esem_efa(
   data,
   nfactors,
-  target,
+  target = "none",
   bifactor = FALSE,
   fm = "pa",
-  rotate = "targetQ",
+  targetAlgorithm = "targetQ",
   ...
 )
 }
 \arguments{
-\item{data}{Raw Data.frame or matrix. [Subjects x Items] data or covariance matrix.}
+\item{data}{Raw data.frame or matrix. Subjects x Items data or item covariance matrix.}
 
 \item{nfactors}{An integer. Number of factors to extract (including G when bifactor).}
 
-\item{target}{Target rotation matrix. Usually obtained with \cite{make_target()}.}
+\item{target}{Target rotation matrix. Usually obtained with \cite{make_target()}.
+Defaults to "none", in which case geominQ rotation is used.}
 
 \item{bifactor}{Logical. Set to TRUE if model is bifactor.}
 
 \item{fm}{Factor extraction method. Defaults to "Principal Axis", see \cite{psych::fa()}
 for alternatives.}
 
-\item{rotate}{Character vector. Factor rotation to use.
-Defaults to oblique target rotation ("targetQ"). Automatically set to
-orthogonal target rotation if \code{bifactor =TRUE}.}
+\item{targetAlgorithm}{Character vector. Factor rotation to use with target matrix.
+Defaults to oblique target rotation ("targetQ"). An alternative is "TargetT", for
+orthogonal target rotation. Automatically set to
+orthogonal target rotation if \code{bifactor = TRUE}.}
 
-\item{...}{Aditional parameters passed to \cite{psych::fa()}.}
+\item{...}{Additional parameters passed to \cite{psych::fa()}.}
 }
 \value{
 \cite{psych::fa()} object with factor extraction results.
 }
 \description{
 Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.
+}
+\details{
+Facilitates ESEM-like exploratory factor analyses.
+In the simplest case, a (oblique) Geomin rotation is used after factor extraction.
+The user can control the value of Geomin \code{delta} (aka \code{epsilon} in the literature)
+by specifying the desired number (usually between 0.1 and 0.9) with \code{delta} in \code{...}
+(see examples).
+
+To run a factor extraction with target rotation, a target rotation matrix (items x factors)
+must be supplied to \code{target}. Matrix cells should show zeros where loadings are expected
+to be as close to zero as possible and \code{NA} where loadings should be freely estimated.
+One can create such a matrix by hand with \cite{base::matrix()}, but check the helping
+function \cite{make_target()} included with this package. The default target rotation
+is oblique, but can be changed to the orthogonal alternative
+by setting \code{targetAlgorithm = "TargetT"}.
+
+To run a factor extraction bifactor target rotation, a bifactor target rotation matrix must be
+supplied to \code{target} and \code{bifactor} should be set to \code{TRUE}.
+}
+\examples{
+#use Tucker 9 cognitive variables cov matrix
+tucker <- psych::Tucker
+
+# esem with Geomin rotation
+esem_efa(tucker, 2)
+# esem with Geomin rotation setting the rotation delta (aka epsilon)
+esem_efa(tucker, 2, delta = .5)
+
+# esem with oblique target rotation
+target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
+esem_efa(tucker,2,target_mat)
+# esem with bifactor target rotation
+bifactor_target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)), TRUE)
+esem_efa(tucker,3,bifactor_target_mat, maxit = 2000) #maxit needed for convergence
 }

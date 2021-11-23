@@ -15,10 +15,12 @@
 #'
 #' @examples
 #' #target matrix for the Tucker dataset in the psych package
-#' make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
+#' main_loadings_list <- list(f1 = c(1,2,5:7),
+#'                            f2 = c(3,4,8,9))
+#' make_target(9, main_loadings_list)
 #'
 #' #bifactor matrix for the same dataset
-#' make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)),TRUE)
+#' make_target(9, main_loadings_list, TRUE)
 make_target <- function (nitems, mainloadings, bifactor = FALSE){
   target_mat <- psych::make.keys(nitems, mainloadings)
   if(bifactor) target_mat <- cbind(target_mat, G = 1)
@@ -29,28 +31,64 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
 #' ESEM EFA
 #'
 #' Wrapper around \cite{psych::fa()} for running ESEM-like exploratory factor analysis.
-#' @param data Raw Data.frame or matrix. \[Subjects x Items] data or covariance matrix.
+#' @param data Raw data.frame or matrix. Subjects x Items data or item covariance matrix.
 #' @param nfactors An integer. Number of factors to extract (including G when bifactor).
 #' @param target Target rotation matrix. Usually obtained with \cite{make_target()}.
+#' Defaults to "none", in which case geominQ rotation is used.
 #' @param bifactor Logical. Set to TRUE if model is bifactor.
 #' @param fm Factor extraction method. Defaults to "Principal Axis", see \cite{psych::fa()}
 #' for alternatives.
-#' @param rotate Character vector. Factor rotation to use.
-#' Defaults to oblique target rotation ("targetQ"). Automatically set to
+#' @param targetAlgorithm Character vector. Factor rotation to use with target matrix.
+#' Defaults to oblique target rotation ("targetQ"). An alternative is "TargetT", for
+#' orthogonal target rotation. Automatically set to
 #' orthogonal target rotation if `bifactor = TRUE`.
-#' @param ... Aditional parameters passed to \cite{psych::fa()}.
+#' @param ... Additional parameters passed to \cite{psych::fa()}.
 #'
+#' @details Facilitates ESEM-like exploratory factor analyses.
+#' In the simplest case, a (oblique) Geomin rotation is used after factor extraction.
+#' The user can control the value of Geomin `delta` (aka `epsilon` in the literature)
+#' by specifying the desired number (usually between 0.1 and 0.9) with `delta` in `...`
+#' (see examples).
+#'
+#' To run a factor extraction with target rotation, a target rotation matrix (items x factors)
+#' must be supplied to `target`. Matrix cells should show zeros where loadings are expected
+#' to be as close to zero as possible and `NA` where loadings should be freely estimated.
+#' One can create such a matrix by hand with \cite{base::matrix()}, but check the helping
+#' function \cite{make_target()} included with this package. The default target rotation
+#' is oblique, but can be changed to the orthogonal alternative
+#' by setting `targetAlgorithm = "TargetT"`.
+#'
+#' To run a factor extraction bifactor target rotation, a bifactor target rotation matrix must be
+#' supplied to `target` and `bifactor` should be set to `TRUE`.
 #'
 #' @return \cite{psych::fa()} object with factor extraction results.
 #' @export
 #'
 #' @examples
-esem_efa <- function(data,  nfactors, target, bifactor = FALSE, fm = "pa", rotate = "targetQ",...){
-  ifelse(bifactor
-    ,esem_fit <- psych::fa(data, nfactors, fm = fm,
-                          rotate = "TargetT", Target = target,...)
-    ,esem_fit <- psych::fa(data, nfactors, fm = fm,
-                           rotate = rotate, Target = target,...)
+#' #use Tucker 9 cognitive variables cov matrix
+#' tucker <- psych::Tucker
+#'
+#' # esem with Geomin rotation
+#' esem_efa(tucker, 2)
+#' # esem with Geomin rotation setting the rotation delta (aka epsilon)
+#' esem_efa(tucker, 2, delta = .5)
+#'
+#' # esem with oblique target rotation
+#' target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
+#' esem_efa(tucker,2,target_mat)
+#' # esem with bifactor target rotation
+#' bifactor_target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)), TRUE)
+#' esem_efa(tucker,3,bifactor_target_mat, maxit = 2000) #maxit needed for convergence
+esem_efa <- function(data,  nfactors, target = "none", bifactor = FALSE, fm = "pa", targetAlgorithm = "targetQ",...){
+  ifelse(target== "none"
+         ,esem_fit <- psych::fa(data, nfactors, fm = fm,
+                                rotate = "geominQ",...)
+         ,ifelse(bifactor
+                 ,esem_fit <- psych::fa(data, nfactors, fm = fm,
+                                        rotate = "TargetT", Target = target,...)
+                 ,esem_fit <- psych::fa(data, nfactors, fm = fm,
+                                        rotate = targetAlgorithm, Target = target,...)
+                 )
   )
   esem_fit
 }
