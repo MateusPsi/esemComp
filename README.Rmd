@@ -1,0 +1,50 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# esemComp
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+esemComp helps composing ESEM-within-CFA syntaxes to be run in lavaan. It has helper functions to create target rotation matrices and to run (ESEM-like) exploratory factor analyses.
+
+## Installation
+
+You can install the development version of esemComp from [GitHub](https://github.com/MateusPsi) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("MateusPsi/esemComp", build_vignettes = TRUE)
+```
+Be advised: the package is still in early development stages.
+
+## Example
+
+The basic usage of the package follows the steps: make target rotation matrix (optional) > do exploratory factor analysis > compose syntax > run model in lavaan.
+
+```{r example}
+library(esemComp)
+# use Holzinger and Swineford (1939) dataset in lavaan package
+hw_data <- lavaan::HolzingerSwineford1939
+hw_data <- hw_data[,c(7:15)]
+
+#make exploratory analysis with geomin rotation
+geomin_efa <- esem_efa(hw_data,3)
+referents_vector <- c(textual = "x5", visual = "x3", speed = "x7")
+model_syntax <- syntax_composer(geomin_efa, referents_vector)
+writeLines(model_syntax)
+
+# esem-within-cfa
+esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
+```
+
