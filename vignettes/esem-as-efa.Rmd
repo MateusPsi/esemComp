@@ -1,0 +1,163 @@
+---
+title: "ESEM-within-CFA"
+bibliography: "ESEM.bib"
+link-citations: true
+biblio-style: "elsevier-vancouver-author-date"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{esem-within-cfa}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
+```
+
+```{r setup}
+library(esemComp)
+```
+
+Exploratory Structural Equation Modeling (ESEM) brings together the strengths in Exploratory Factor Analysis (EFA) and Structural Equation Modeling (SEM) [@asparouhov_exploratory_2009]. In its simplest form, it involves using EFA "blocks" as part of a SEM model. These blocks often use either Geomin rotation or target rotations.
+
+Currently, the integration of EFA blocks to make ESEM models is still under development by the team that develops `lavaan`, a prominent package for CFA and ESEM in R.
+
+Here, we will overcome this difficulty using the ESEM-within-CFA approach, where we first do the EFA part and then use its results as starting values in a CFA model (or a SEM model; see @marsh_exploratory_2014 for a nice introduction to the topic).
+
+We will use the Holzinger and Swineford (1939) dataset, available in the `lavaan` package. It shows the results of 301 children in tests of the following cognitive abilities: visual (items x1-x3), textual (x4-x6) and speed (x7-x9). Let's load the dataset and keep only the item-columns. 
+```{r}
+#load full data
+hw_data <- lavaan::HolzingerSwineford1939
+# keep all rows and only the item-columns
+hw_data <- hw_data[, c(7:15)]
+
+#take a look
+head(hw_data)
+```
+
+
+## EFA blocks
+
+To make an EFA with target rotation, first we need to specify the target rotation matrix. The `make_target()` function facilitates this. For this function to work, we need to indicate the
+mapping between factors and their main loadings, that is, which items we expect to load heavily in each factor. This information must be contained in a list where the name of each item is the factor name, and the content is a numeric vector with the column number of the items we expect to load onto that factor.
+
+If we check back the dataset and the factors, we see that the correspondence between factor and item column number is pretty straightforward in this dataset. The first three columns refer to the items in the first factor, the next three columns are the items for the second factor etc. This may not be the case for your dataset! Many scales have items related to different factors interleaved, leading to non-sequential items referring to the same factor. 
+```{r}
+# list with mapping between factors and items
+main_loadings_list <- list(visual = c(1:3),
+                           textual = c(4:6),
+                           speed = c(7:9))
+target_rot <- make_target(nitems = 9, mainloadings = main_loadings_list)
+target_rot
+```
+`NA` in the target rotation matrix indicate loadings that shall not be brought closer to zero in the rotation procedure, and zeros indicate otherwise.
+
+One can also easily make a target roation for a bifactor model.
+```{r}
+bifactor_target_rot <- make_target(nitems = 9,
+                                  mainloadings = main_loadings_list,
+                                  bifactor = TRUE)
+bifactor_target_rot
+```
+However, we will keep the non-bifactor model in this vignette.
+
+Now, for the loadings extraction itself with the `esem_efa()` function. We need to supply the data, the number of factors to be extracted and the target rotation matrix.
+```{r}
+efa_block <- esem_efa(data = hw_data,
+                      nfactors = 3,
+                      target = target_rot)
+efa_block
+```
+
+The `esem_efa()` function is actually a wrapper around the `psych` package function `fa()` for exploratory factor analysis. All its controls can be supplied for finer specification of the factor extraction procedure. Just be sure to always input the arguments of the orginal function with `name = value` pairs.
+
+By default, the target rotation used is an oblique one. The user can switch to an orthogonal target rotation by setting the `targetAlgorithm` parameter to `TargetT`. Other alternative is to drop the use of target rotation altogether and use a Geomin rotation instead. In this case, just leave the `target` parameter alone. One last possible use is available for the case of bifactor models. In this case, just set `bifactor = TRUE`. Currently, bifactor models are only available with target rotation. These cases are commented below.
+
+```{r}
+# orthogonal target rotation
+# esem_efa(data = hw_data,
+#          nfactors = 3,
+#          target = target_rot,
+#          targetAlgorithm = "TargetT")
+
+# geomin rotation
+# esem_efa(data = hw_data,
+#          nfactors = 3)
+
+# bifactor model
+# esem_efa(data = hw_data,
+#          nfactors = 4,
+#          target = bifactor_target_rot,
+#          bifactor = TRUE)
+```
+
+Being able to do these factor analyses as in ESEM blocks is nice, but it still lacks the great flexibility and extensibility present in CFA/SEM models. To access those features, we will use the ESEM-within-CFA approach.
+
+## ESEM-within-CFA
+
+While in possession of an EFA done in the ESEM approach, as we have done in the last session, we need just to use the `syntax_composer()` function to "compose" the ESEM-within-CFA model in lavaan's syntax. Then, with the syntax, we run the lavaan fit.
+
+`syntax_composer()` takes as first argument a EFA solution, and as second argument a named vector indicating the referents for each factor. Each entry in the vector should have the form `factor = "item_name"`. Importantly, this vector must be in the same order the factors appear in the factor loadings matrix in the EFA solution. Usually, this will not be the same order you used in the list to create a target rotation because in the EFA matrix the factors are ordered by the amount of variance explained, not by any order we supply.
+
+For instance, by checking the loadings we can infer that the order in the factor loadings matrix in our example is "textual, speed, visual".  That is not the order we used in `make_target()`, "visual, textual, speed". 
+
+```{r}
+efa_block$loadings
+```
+
+
+When checking the loadings matrix we can also pick which is the best referent for each factor. It should always be an item that loads heavily in one factor and poorly in the others. So, for factor "textual" the referent will be x5, for speed it will be x8 and for visual x3. We will create the character vector with them in this order.
+
+```{r}
+# create named character vector of referents
+hw_referents <- c(textual = "x5",
+                  speed = "x8",
+                  visual = "x3")
+
+# compose lavaan syntax
+model_syntax <- syntax_composer(efa_object = efa_block,
+                                referents = hw_referents)
+
+```
+
+Laavan's model syntaxes are nothing more than an (often) long string. The best way to see the resulting syntax is with `writeLines`:
+```{r}
+writeLines(model_syntax)
+```
+We can confirm that the each factor has two fixed parameters (the cross-loadings from the other factors) and all other parameters have the loadings from the EFA as starting points. We are ready to run a CFA in lavaan with this syntax.
+
+```{r}
+cfa_fit <- lavaan::cfa(model = model_syntax, data = hw_data)
+lavaan::summary(cfa_fit)
+```
+## Extending the model
+To modify or extend the model we just need to add more information to the model syntax we already have.
+Let's say we want to estimate the residual covariance between two items, we could do:
+```{r}
+# lavaan syntax for x3 covariates with x4
+mod_extension <- "x3 ~~ x4"
+extended_model_syntax <- paste0(model_syntax, mod_extension, collapse = "\n")
+writeLines(extended_model_syntax)
+```
+```{r}
+extended_cfa_fit <- lavaan::cfa(extended_model_syntax, hw_data)
+lavaan::summary(extended_cfa_fit)
+```
+
+Check lavaan's `lavaanify()` documentation to learn about the different syntaxes for model extension.
+
+## References

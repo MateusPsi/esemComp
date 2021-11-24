@@ -2,4 +2,5 @@
 
 export(esem_efa)
 export(make_target)
+export(syntax_composer)
 importFrom(data.table,":=")
