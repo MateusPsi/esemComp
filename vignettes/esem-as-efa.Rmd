@@ -83,9 +83,9 @@ efa_block <- esem_efa(data = hw_data,
 efa_block
 ```
 
-The `esem_efa()` function is actually a wrapper around the `psych` package function `fa()` for exploratory factor analysis. All its controls can be supplied for finer specification of the factor extraction procedure. Just be sure to always input the arguments of the orginal function with `name = value` pairs.
+The `esem_efa()` function is actually a wrapper around the `psych` package function `fa()` for exploratory factor analysis. All its controls can be supplied for finer specification of the factor extraction procedure. Just be sure to always input the arguments of the orginal function with `name = value` pairs. Be sure to check `fa()`'s documentation for information on those controls and information about all the fields inside the output object.
 
-By default, the target rotation used is an oblique one. The user can switch to an orthogonal target rotation by setting the `targetAlgorithm` parameter to `TargetT`. Other alternative is to drop the use of target rotation altogether and use a Geomin rotation instead. In this case, just leave the `target` parameter alone. One last possible use is available for the case of bifactor models. In this case, just set `bifactor = TRUE`. Currently, bifactor models are only available with target rotation. These cases are commented below.
+By default, the target rotation used is an oblique one. The user can switch to an orthogonal target rotation by setting the `targetAlgorithm` parameter to `TargetT`. Other alternative is to drop the use of target rotation altogether and use a Geomin rotation instead. In this case, just leave the `target` parameter alone. One last possible use is available for the case of bifactor models. In this case, just set `bifactor = TRUE`. Currently, bifactor models are only available with target rotation. The code for each of these cases are commented below.
 
 ```{r}
 # orthogonal target rotation

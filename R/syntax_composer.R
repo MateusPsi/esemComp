@@ -7,6 +7,7 @@
 #' @return long_loadings data.table
 #'
 make_loadings_dt <- function(fa_object, factor_names){
+  factor_names <- unlist(factor_names)
   nrow <- nrow(fa_object$loadings)
   nfactors <- length(factor_names)
   #include check between names and fa_object factors
@@ -32,7 +33,7 @@ make_loadings_dt <- function(fa_object, factor_names){
 #' @param efa_object A \cite{psych::fa()} object with the results of a exploratory factor analysis.
 #' The factor loadings from this analysis will be set as starting values or fixed values in the
 #' lavaan syntax created.
-#' @param referents A named character vector in the form `c(factor1 = "referent1", etc)`. Each
+#' @param referents A named list in the form `list(factor1 = "referent1", etc)`. Each
 #' entry identifies the referent for one of the factors. The order of this vector must be
 #' the same order the factors are ordered in the `efa_object`.
 #'
@@ -58,8 +59,8 @@ make_loadings_dt <- function(fa_object, factor_names){
 #'
 #' #make exploratory analysis with geomin rotation
 #' geomin_efa <- esem_efa(hw_data,3)
-#' referents_vector <- c(textual = "x5", visual = "x3", speed = "x7")
-#' model_syntax <- syntax_composer(geomin_efa, referents_vector)
+#' referents_list <- c(textual = "x5", visual = "x3", speed = "x7")
+#' model_syntax <- syntax_composer(geomin_efa, referents_list)
 #' writeLines(model_syntax)
 #'
 #'# esem-within-cfa
