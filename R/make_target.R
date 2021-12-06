@@ -30,6 +30,8 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
      any(!(mainloadings_vec %in% expected_mainloadings))){
     abort_bad_indexes(nitems, not = mainloadings_vec)
   }
+
+  ## make target matrix
   target_mat <- psych::make.keys(nitems, mainloadings)
   if(bifactor) target_mat <- cbind(target_mat, G = 1)
 
@@ -88,6 +90,13 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
 #' bifactor_target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)), TRUE)
 #' esem_efa(tucker,3,bifactor_target_mat, maxit = 2000) #maxit needed for convergence
 esem_efa <- function(data,  nfactors, target = "none", bifactor = FALSE, fm = "pa", targetAlgorithm = "targetQ",...){
+  ## check if number of factors is the same in rotation matrix and input
+  if(is.matrix(target)){
+    if(nfactors != ncol(target)){
+      abort_bad_n_esem(ncol(target), nfactors)
+    }
+  }
+
   ifelse(target== "none"
          ,esem_fit <- psych::fa(data, nfactors, fm = fm,
                                 rotate = "geominQ",...)
