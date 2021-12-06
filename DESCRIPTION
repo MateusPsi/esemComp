@@ -20,5 +20,7 @@ Imports:
     lavaan,
     data.table,
     GPArotation,
-    psych
+    psych,
+    rlang,
+    glue
 VignetteBuilder: knitr
