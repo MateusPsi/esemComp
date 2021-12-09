@@ -86,3 +86,47 @@ syntax_composer <- function(efa_object, referents){
   paste(sapply(unique(loadings_dt$latent), each_syntax), collapse = "\n")
 
 }
+
+find_referents <- function(efa_object, factor_names){
+  #factor_names <- unlist(factor_names)
+  nrow <- nrow(efa_object$loadings)
+  nfactors <- length(factor_names)
+
+  efa_matrix <- matrix(efa_object$loadings, nrow = nrow,
+                       ncol = nfactors,
+                       dimnames = list(row.names(efa_object$loadings)))
+  efa_loading <- data.table::data.table(efa_matrix, keep.rownames = "item")
+
+  data.table::setnames(efa_loading,
+                       paste0("V",c(1:nfactors)),
+                       factor_names)
+
+  long_loadings <- data.table::melt(efa_loading, "item", variable.name = "latent")
+  referent_loadings <- long_loadings[order(-value),.SD[1],by = latent]
+  unique_referents <-  length(unique(referent_loadings$item))
+
+  # Check ties in referents among latents
+  # tries to break the ties by moving forward
+  # from the highest to the lowest values.
+  # Currently moves to the next value in all
+  # dupplicated at once.
+  n_value <- 1
+  while(nfactors != unique_referents){
+    #latents with bad referent
+    bad_referents <- referent_loadings[duplicated(item),latent]
+    n_value <- n_value+1
+    new_referents <- long_loadings[latent %in% bad_referents][
+      order(-value),.SD[n_value],by = latent]
+    referent_loadings[latent %in% bad_referents] <- new_referents
+    unique_referents <-  length(unique(referent_loadings$item))
+  }
+
+  #make sure rows are in the right order
+  factor_names_unique <- make.unique(factor_names)
+  referent_loadings <- referent_loadings[match(factor_names_unique
+                                               ,as.character(latent))]
+  referent_list <- as.list(referent_loadings$item)
+  names(referent_list) <- referent_loadings$latent
+
+  referent_list
+}
