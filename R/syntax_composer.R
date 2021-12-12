@@ -9,8 +9,19 @@
 make_loadings_dt <- function(fa_object, factor_names){
   factor_names <- unlist(factor_names)
   nrow <- nrow(fa_object$loadings)
+  ncol <- ncol(fa_object$loadings)
   nfactors <- length(factor_names)
   #include check between names and fa_object factors
+
+  if(ncol != nfactors){
+    msg <- glue::glue(
+      "Number of referents is {nfactors} and number of factors in efa_object is {ncol}.
+      The number of referents and factors must be the same. If you are trying to compose
+      an bifactor model, remember that a referent for the G-factor is also required."
+    )
+    rlang::abort("error_bad_argument",
+                 message = msg)
+  }
 
   efa_matrix <- matrix(fa_object$loadings, nrow = nrow,
                        ncol = nfactors,
