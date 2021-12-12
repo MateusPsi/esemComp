@@ -11,7 +11,7 @@ syntax_composer(efa_object, referents)
 The factor loadings from this analysis will be set as starting values or fixed values in the
 lavaan syntax created.}
 
-\item{referents}{A named character vector in the form \code{c(factor1 = "referent1", etc)}. Each
+\item{referents}{A named list in the form \code{list(factor1 = "referent1", etc)}. Each
 entry identifies the referent for one of the factors. The order of this vector must be
 the same order the factors are ordered in the \code{efa_object}.}
 }
@@ -41,8 +41,8 @@ hw_data <- hw_data[,c(7:15)]
 
 #make exploratory analysis with geomin rotation
 geomin_efa <- esem_efa(hw_data,3)
-referents_vector <- c(textual = "x5", visual = "x3", speed = "x7")
-model_syntax <- syntax_composer(geomin_efa, referents_vector)
+referents_list <- list(textual = "x5", visual = "x3", speed = "x7")
+model_syntax <- syntax_composer(geomin_efa, referents_list)
 writeLines(model_syntax)
 
 # esem-within-cfa

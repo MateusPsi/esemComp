@@ -1,6 +1,6 @@
 Package: esemComp
 Title: ESEM-within-CFA syntax composer
-Version: 0.1
+Version: 0.2
 Authors@R: c(
     person("Mateus", "Silvestrin", , "mateusilvestrin@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3482-3676")),

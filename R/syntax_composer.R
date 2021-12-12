@@ -11,13 +11,13 @@ make_loadings_dt <- function(fa_object, factor_names){
   nrow <- nrow(fa_object$loadings)
   ncol <- ncol(fa_object$loadings)
   nfactors <- length(factor_names)
-  #include check between names and fa_object factors
 
+  #check number of names and fa_object factors
   if(ncol != nfactors){
     msg <- glue::glue(
       "Number of referents is {nfactors} and number of factors in efa_object is {ncol}.
       The number of referents and factors must be the same. If you are trying to compose
-      an bifactor model, remember that a referent for the G-factor is also required."
+      a bifactor model, remember that a referent for the G-factor is also required."
     )
     rlang::abort("error_bad_argument",
                  message = msg)
@@ -70,7 +70,7 @@ make_loadings_dt <- function(fa_object, factor_names){
 #'
 #' #make exploratory analysis with geomin rotation
 #' geomin_efa <- esem_efa(hw_data,3)
-#' referents_list <- c(textual = "x5", visual = "x3", speed = "x7")
+#' referents_list <- list(textual = "x5", visual = "x3", speed = "x7")
 #' model_syntax <- syntax_composer(geomin_efa, referents_list)
 #' writeLines(model_syntax)
 #'
@@ -98,10 +98,56 @@ syntax_composer <- function(efa_object, referents){
 
 }
 
+#' Automatically find referent items for ESEM
+#'
+#' @param efa_object A \cite{psych::fa()} object with the results of a exploratory factor analysis.
+#' Referents will be selected based on the factor loadings in this solution.
+#' @param factor_names Character vector. The names should identify the factors in the `efa_object`.
+#' They must be in the same order they appear in the `efa_object`.
+#'
+#' @details Given an exploratory factor analysis results, this function finds a referent item for each
+#' factor and outputs a list to be used in \cite{syntax_composer}.
+#'
+#' The automatic selection currently does not choose the referents with the recommended approach
+#' in the literature, that is, a items that load heavily on one factor and lightly on all the others.
+#' In its current implementation, the items are chosen solely based on their highest loadings.
+#' This may lead to less than ideal referent selection in some situations. It is recommended to always
+#' compare the resulting  referents with the items one would choose when inspecting the exploratory
+#' solution loadings (usually with `loadings(efa_)`).
+#'
+#' @return A named list in the format `c(Factor Name = referent)`, in the same order as the given
+#' factor names.
+#' @export
+#'
+#' @examples
+#' # use Holzinger and Swineford (1939) dataset in lavaan package
+#' hw_data <- lavaan::HolzingerSwineford1939
+#' hw_data <- hw_data[,c(7:15)]
+#'
+#' #make exploratory analysis with geomin rotation
+#' geomin_efa <- esem_efa(hw_data,3)
+#'
+#' #find referents
+#' find_referents(geomin_efa, c("textual", "visual", "speed"))
+#' #In this particular case, automatic selection chooses
+#' #the same items one would choose manually. For comparison:
+#' loadings(geomin_efa)
 find_referents <- function(efa_object, factor_names){
   #factor_names <- unlist(factor_names)
   nrow <- nrow(efa_object$loadings)
+  ncol <- ncol(efa_object$loadings)
   nfactors <- length(factor_names)
+
+  #check number of names and fa_object factors
+  if(ncol != nfactors){
+    msg <- glue::glue(
+      "Number of factor_names is {nfactors} and number of factors in efa_object is {ncol}.
+      The number of factor_names and factors must be the same. If you are trying to find
+      referents for a bifactor model, remember that a referent for the G-factor is also required."
+    )
+    rlang::abort("error_bad_argument",
+                 message = msg)
+  }
 
   efa_matrix <- matrix(efa_object$loadings, nrow = nrow,
                        ncol = nfactors,

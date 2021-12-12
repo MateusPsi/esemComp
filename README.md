@@ -35,8 +35,8 @@ hw_data <- hw_data[,c(7:15)]
 #make exploratory analysis with geomin rotation
 geomin_efa <- esem_efa(hw_data,3)
 #> Loading required namespace: GPArotation
-referents_vector <- c(textual = "x5", visual = "x3", speed = "x7")
-model_syntax <- syntax_composer(geomin_efa, referents_vector)
+referents_list <- list(textual = "x5", visual = "x3", speed = "x7")
+model_syntax <- syntax_composer(geomin_efa, referents_list)
 writeLines(model_syntax)
 #> textual =~ start(0.193)*x1+
 #> start(0.042)*x2+
