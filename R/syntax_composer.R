@@ -6,7 +6,7 @@
 #'
 #' @return long_loadings data.table
 #'
-make_loadings_dt <- function(fa_object, factor_names){
+.make_loadings_dt <- function(fa_object, factor_names){
   factor_names <- unlist(factor_names)
   nrow <- nrow(fa_object$loadings)
   ncol <- ncol(fa_object$loadings)
@@ -79,7 +79,7 @@ make_loadings_dt <- function(fa_object, factor_names){
 #'summary(esem_w_cfa)
 syntax_composer <- function(efa_object, referents){
 
-  loadings_dt <- make_loadings_dt(efa_object, names(referents))
+  loadings_dt <- .make_loadings_dt(efa_object, names(referents))
   # make is_anchor variable
   loadings_dt[, is_anchor := 0]
   for (l in names(referents)) loadings_dt[latent != l & item == referents[l], is_anchor := 1]
