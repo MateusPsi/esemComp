@@ -14,7 +14,7 @@ Referents will be selected based on the factor loadings in this solution.}
 They must be in the same order they appear in the \code{efa_object}.}
 }
 \value{
-A named list in the format \verb{c(Factor Name = referent)}, in the same order as the given
+A named list in the format \code{c(FactorName = referent)}, in the same order as the given
 factor names.
 }
 \description{
@@ -29,7 +29,7 @@ in the literature, that is, a items that load heavily on one factor and lightly 
 In its current implementation, the items are chosen solely based on their highest loadings.
 This may lead to less than ideal referent selection in some situations. It is recommended to always
 compare the resulting  referents with the items one would choose when inspecting the exploratory
-solution loadings (usually with \code{loadings(efa_)}).
+solution loadings (usually with \code{loadings(efa_object)}).
 }
 \examples{
 # use Holzinger and Swineford (1939) dataset in lavaan package

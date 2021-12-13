@@ -113,9 +113,9 @@ syntax_composer <- function(efa_object, referents){
 #' In its current implementation, the items are chosen solely based on their highest loadings.
 #' This may lead to less than ideal referent selection in some situations. It is recommended to always
 #' compare the resulting  referents with the items one would choose when inspecting the exploratory
-#' solution loadings (usually with `loadings(efa_)`).
+#' solution loadings (usually with `loadings(efa_object)`).
 #'
-#' @return A named list in the format `c(Factor Name = referent)`, in the same order as the given
+#' @return A named list in the format `c(FactorName = referent)`, in the same order as the given
 #' factor names.
 #' @export
 #'

@@ -75,7 +75,7 @@ bifactor_target_rot
 ```
 However, we will keep the non-bifactor model in this vignette.
 
-Now, for the loadings extraction itself with the `esem_efa()` function. We need to supply the data, the number of factors to be extracted and the target rotation matrix.
+Now, for the loading extraction itself with the `esem_efa()` function. We need to supply the data, the number of factors to be extracted and the target rotation matrix.
 ```{r}
 efa_block <- esem_efa(data = hw_data,
                       nfactors = 3,
@@ -83,7 +83,7 @@ efa_block <- esem_efa(data = hw_data,
 efa_block
 ```
 
-The `esem_efa()` function is actually a wrapper around the `psych` package function `fa()` for exploratory factor analysis. All its controls can be supplied for finer specification of the factor extraction procedure. Just be sure to always input the arguments of the orginal function with `name = value` pairs. Be sure to check `fa()`'s documentation for information on those controls and information about all the fields inside the output object.
+The `esem_efa()` function is actually a wrapper around the `psych` package function `fa()` for exploratory factor analysis. All its controls can be supplied for finer specification of the factor extraction procedure. Just be sure to always input the arguments from the original function with `name = value` pairs. Be sure to check `fa()`'s documentation for information on those controls and information about all the fields inside the output object.
 
 By default, the target rotation used is an oblique one. The user can switch to an orthogonal target rotation by setting the `targetAlgorithm` parameter to `TargetT`. Other alternative is to drop the use of target rotation altogether and use a Geomin rotation instead. In this case, just leave the `target` parameter alone. One last possible use is available for the case of bifactor models. In this case, just set `bifactor = TRUE`. Currently, bifactor models are only available with target rotation. The code for each of these cases are commented below.
 
@@ -105,36 +105,48 @@ By default, the target rotation used is an oblique one. The user can switch to a
 #          bifactor = TRUE)
 ```
 
-Being able to do these factor analyses as in ESEM blocks is nice, but it still lacks the great flexibility and extensibility present in CFA/SEM models. To access those features, we will use the ESEM-within-CFA approach.
+Being able to do these factor analyses as in ESEM blocks is nice, but it still lacks the great flexibility and extensibility present in CFA/SEM models. To access those features, we will use the ESEM-within-CFA approach next.
 
 ## ESEM-within-CFA
 
-While in possession of an EFA done in the ESEM approach, as we have done in the last session, we need just to use the `syntax_composer()` function to "compose" the ESEM-within-CFA model in lavaan's syntax. Then, with the syntax, we run the lavaan fit.
+While in possession of an EFA done in the ESEM approach, we need just to use the `syntax_composer()` function to "compose" the ESEM-within-CFA model in lavaan's syntax. Then, with the syntax, we run the lavaan fit.
 
-`syntax_composer()` takes as first argument a EFA solution, and as second argument a named vector indicating the referents for each factor. Each entry in the vector should have the form `factor = "item_name"`. Importantly, this vector must be in the same order the factors appear in the factor loadings matrix in the EFA solution. Usually, this will not be the same order you used in the list to create a target rotation because in the EFA matrix the factors are ordered by the amount of variance explained, not by any order we supply.
+`syntax_composer()` takes as first argument a EFA solution, and as second argument a named list indicating the referents for each factor. Each entry in the list should have the form `factor = "item_name"`. Importantly, this list must be in the same order the factors appear in the factor loadings matrix in the EFA solution. Usually, this will not be the same order you used in the list to create a target rotation, because in the EFA matrix the factors are ordered by the amount of variance explained, not by any order we supply.
 
-For instance, by checking the loadings we can infer that the order in the factor loadings matrix in our example is "textual, speed, visual".  That is not the order we used in `make_target()`, "visual, textual, speed". 
+For instance, by checking the loadings we can infer that the order in the factor loadings matrix in our example is "textual, speed, visual".  That is not the order we used in `make_target()`("visual, textual, speed"). 
 
 ```{r}
 efa_block$loadings
 ```
 
 
-When checking the loadings matrix we can also pick which is the best referent for each factor. It should always be an item that loads heavily in one factor and poorly in the others. So, for factor "textual" the referent will be x5, for speed it will be x8 and for visual x3. We will create the character vector with them in this order.
+When checking the loadings matrix we can also pick which is the best referent for each factor. It should always be an item that loads heavily on one factor and poorly on the others. So, for factor "textual" the referent will be x5, for speed it will be x8 and for visual x3. We will create the list with them in this order.
 
 ```{r}
 # create named character vector of referents
-hw_referents <- c(textual = "x5",
-                  speed = "x8",
-                  visual = "x3")
+hw_referents <- list(textual = "x5",
+                     speed = "x8",
+                     visual = "x3")
+```
 
+Alternatively, it is possible to use the `find_referents()` function for automated selection of referents. The inputs are the result from the `esem_efa()`function and a character vector with the desired names for the factors. Once again, the names must refer to the factors in the order they appear in the exploratory solution.
+
+```{r}
+find_referents(efa_block, c("textual", "speed", "visual"))
+```
+
+It should be noted that the referents chosen by the function are not exactly the same as the ones we chose by inspecting the factor loadings, the referent for speed differs. This happens because the current implementation of `find_referents()` searches only for the highest loading item on each factor, with no regard for how well the item loads on other factors.
+
+Finally, we compose the lavaan syntax with `syntax_composer`:
+
+```{r}
 # compose lavaan syntax
 model_syntax <- syntax_composer(efa_object = efa_block,
                                 referents = hw_referents)
-
 ```
 
-Laavan's model syntaxes are nothing more than an (often) long string. The best way to see the resulting syntax is with `writeLines`:
+
+Laavan's model syntaxes are nothing more than an (often) long string. The best way to see the resulting syntax is with `writeLines()`:
 ```{r}
 writeLines(model_syntax)
 ```
@@ -148,16 +160,22 @@ lavaan::summary(cfa_fit)
 To modify or extend the model we just need to add more information to the model syntax we already have.
 Let's say we want to estimate the residual covariance between two items, we could do:
 ```{r}
-# lavaan syntax for x3 covariates with x4
+# lavaan syntax for "x3 covariates with x4"
 mod_extension <- "x3 ~~ x4"
-extended_model_syntax <- paste0(model_syntax, mod_extension, collapse = "\n")
+extended_model_syntax <- paste(model_syntax, mod_extension, sep = "\n")
 writeLines(extended_model_syntax)
 ```
+
+The formula `paste(model_syntax, mod_extension, sep = "\n")` can be used iteratively to progressively add extensions to the model, or one can write several extensions between parenthesis and add them to the model in one go.
+
+
+After extending the model, the new syntax can be used to fit a new model with lavaan's `cfa()` or `sem()` (if your extensions include regressions).
+
 ```{r}
 extended_cfa_fit <- lavaan::cfa(extended_model_syntax, hw_data)
 lavaan::summary(extended_cfa_fit)
 ```
 
-Check lavaan's `lavaanify()` documentation to learn about the different syntaxes for model extension.
+Check lavaan's `lavaanify()` documentation to learn about syntaxes for model extension (covariances, regressions and much more).
 
 ## References
