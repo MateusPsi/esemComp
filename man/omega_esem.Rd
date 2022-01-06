@@ -4,14 +4,31 @@
 \alias{omega_esem}
 \title{McDonald's Omega for ESEM}
 \usage{
-omega_esem(esem_model_fit, target_matrix)
+omega_esem(esemmodel_fit, target_matrix)
 }
 \arguments{
-\item{target_matrix}{}
+\item{target_matrix}{Target rotation matrix. Usually, the same used to run \cite{esem_efa()}.}
+
+\item{esem_model_fit}{Lavaan object with an ESEM fitted model.}
 }
 \value{
-
+McDonald's Omega value.
 }
 \description{
-McDonald's Omega for ESEM
+Calculates McDonald's omega using the data inside the Lavaan object of a fitted
+model. The formula is the following:
+\deqn{ \omega = |\sum{\lambda_i}|^2 / |\sum{\lambda_i}|^2 + \delta_i_i }
+Where  \eqn{\lambda_i} are the factor loadings and \eqn{\delta_i_i}, the error variances.
+}
+\examples{
+#use Tucker 9 cognitive variables cov matrix
+tucker <- psych::Tucker
+
+# esem with oblique target rotation
+target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
+tucker_esem_efa <- esem_efa(tucker,2,target_mat)
+
+# fit lavaan model
+referents_list <- find_referents(tucker_esem_efa, )
+model_syntax <- syntax_composer()
 }
