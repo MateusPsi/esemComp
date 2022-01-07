@@ -178,4 +178,30 @@ lavaan::summary(extended_cfa_fit)
 
 Check lavaan's `lavaanify()` documentation to learn about syntaxes for model extension (covariances, regressions and much more).
 
+## McDonald's Omega
+We can calculate McDonald's omega using the fitted model and target rotation matrix. Currently, the use of a target rotation matrix is mandatory.
+
+```{r}
+omega_esem(extended_cfa_fit, target_rot)
+```
+
+## Export results
+Result information from the `summary()` may be exported to a text file with the `export_lavaan_results()` function. It is possible to add a preamble to enrich the information in the output.
+
+Since the function runs lavaan's `summary()` before dumping the results, one can add extra results such as modification indices and r-squared measures with the corresponding modifiers to the
+call (the all modifiers are listed in the lavaans `lavaan-class` help).
+
+```{r results='hide', eval=FALSE}
+my_preamble <- '
+ESEM on the classic Holtzinger Swineford data.
+
+Referents chosen after target rotate EFA with 
+Principal Axis extraction.
+'
+
+export_lavaan_results(extended_cfa_fit, preamble = my_preamble, rsquare = TRUE)
+```
+
+This saves a "lavaan_summary.txt" file to my current working directory with the preamble in `my_preamble` at the top. I also added the `rsquare` modifier to ensure it shows on the results. If I wished to save the file somewhere else I would pass the full path as `path_name`, something like "C:/directory_one/another_directory/my_desired_file_name.txt". Irrespective of operating system the path must be written with forward `/`, not backward, slashes. The path must end with a file name with a text extension.
+
 ## References
