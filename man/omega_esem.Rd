@@ -4,12 +4,14 @@
 \alias{omega_esem}
 \title{McDonald's Omega for ESEM}
 \usage{
-omega_esem(esemmodel_fit, target_matrix)
+omega_esem(esem_model_fit, target_matrix)
 }
 \arguments{
-\item{target_matrix}{Target rotation matrix. Usually, the same used to run \cite{esem_efa()}.}
-
 \item{esem_model_fit}{Lavaan object with an ESEM fitted model.}
+
+\item{target_matrix}{Target rotation matrix. Usually, the same used to run \cite{esem_efa()}.
+The names of the factors in the matrix must
+be exactly the same as the names in the fitted lavaan model.}
 }
 \value{
 McDonald's Omega value.
@@ -29,6 +31,10 @@ target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)))
 tucker_esem_efa <- esem_efa(tucker,2,target_mat)
 
 # fit lavaan model
-referents_list <- find_referents(tucker_esem_efa, )
-model_syntax <- syntax_composer()
+referents_list <- find_referents(tucker_esem_efa, c("f2", "f1"))
+model_syntax <- syntax_composer(tucker_esem_efa, referents_list)
+fit <- cfa(model_syntax, sample.cov = as.matrix(tucker), sample.nobs = 710)
+
+# McDonald's Omega
+omega_esem(fit, target_mat)
 }

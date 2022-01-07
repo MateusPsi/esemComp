@@ -13,7 +13,7 @@ Functions to compose ESEM-within-CFA models to run in lavaan.
 
 Authors:
 \itemize{
-  \item Leon T. de Beer \email{abcd@fgh.com} (\href{https://orcid.org/0000-0001-6900-2192}{ORCID})
+  \item Leon T. de Beer \email{12848417@g.nwu.ac.za} (\href{https://orcid.org/0000-0001-6900-2192}{ORCID}) (WorkWell Research Unit, North-West University)
 }
 
 }
