@@ -23,7 +23,7 @@
 #' # fit lavaan model
 #' referents_list <- find_referents(tucker_esem_efa, c("f2", "f1"))
 #' model_syntax <- syntax_composer(tucker_esem_efa, referents_list)
-#' fit <- cfa(model_syntax, sample.cov = as.matrix(tucker), sample.nobs = 710)
+#' fit <- lavaan::cfa(model_syntax, sample.cov = as.matrix(tucker), sample.nobs = 710)
 #'
 #' # McDonald's Omega
 #' omega_esem(fit, target_mat)
