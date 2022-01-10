@@ -109,11 +109,12 @@ syntax_composer <- function(efa_object, referents){
 #' factor and outputs a list to be used in \cite{syntax_composer}.
 #'
 #' The automatic selection currently does not choose the referents with the recommended approach
-#' in the literature, that is, a items that load heavily on one factor and lightly on all the others.
+#' in the literature, that is, items that load heavily on one factor and lightly on all the others.
 #' In its current implementation, the items are chosen solely based on their highest loadings.
 #' This may lead to less than ideal referent selection in some situations. It is recommended to always
 #' compare the resulting  referents with the items one would choose when inspecting the exploratory
-#' solution loadings (usually with `loadings(efa_object)`).
+#' solution loadings (usually with `loadings(efa_object)`). In fact, the user should always check
+#'  `loadings(efa_object)` _before_ calling the function to be able to specify `factor_names` correctly.
 #'
 #' @return A named list in the format `c(FactorName = referent)`, in the same order as the given
 #' factor names.
@@ -127,7 +128,9 @@ syntax_composer <- function(efa_object, referents){
 #' #make exploratory analysis with geomin rotation
 #' geomin_efa <- esem_efa(hw_data,3)
 #'
-#' #find referents
+#' # check the order of factors in the efa solution
+#' loadings(geomin_efa)
+#' #find referents with factors in the order checked above
 #' find_referents(geomin_efa, c("textual", "visual", "speed"))
 #' #In this particular case, automatic selection chooses
 #' #the same items one would choose manually. For comparison:
