@@ -18,8 +18,6 @@ You can install the development version of esemComp from
 devtools::install_github("MateusPsi/esemComp", build_vignettes = TRUE)
 ```
 
-Be advised: the package is still in early development stages.
-
 ## Example
 
 The basic usage of the package follows the steps: make target rotation
@@ -71,3 +69,11 @@ writeLines(model_syntax)
 # esem-within-cfa
 esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
 ```
+
+``` r
+# save results to an external text file
+export_lavaan_results(esem_w_cfa)
+```
+
+Be sure to check the *esem-as-efa* vignette for a more comprehensive
+display of the package logic and capabilities.
