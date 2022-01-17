@@ -14,7 +14,7 @@ The names of the factors in the matrix must
 be exactly the same as the names in the fitted lavaan model.}
 }
 \value{
-McDonald's Omega value.
+McDonald's Omega values for each factor and overall.
 }
 \description{
 Calculates McDonald's omega using the data inside the Lavaan object of a fitted

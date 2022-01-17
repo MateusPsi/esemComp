@@ -9,7 +9,7 @@
 #' model. The formula is the following:
 #' \deqn{ \omega = |\sum{\lambda_i}|^2 / |\sum{\lambda_i}|^2 + \delta_i_i }
 #' Where  \eqn{\lambda_i} are the factor loadings and \eqn{\delta_i_i}, the error variances.
-#' @return McDonald's Omega value.
+#' @return McDonald's Omega values for each factor and overall.
 #' @export
 #'
 #' @examples
