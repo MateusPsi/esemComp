@@ -25,11 +25,12 @@ Given an exploratory factor analysis results, this function finds a referent ite
 factor and outputs a list to be used in \cite{syntax_composer}.
 
 The automatic selection currently does not choose the referents with the recommended approach
-in the literature, that is, a items that load heavily on one factor and lightly on all the others.
+in the literature, that is, items that load heavily on one factor and lightly on all the others.
 In its current implementation, the items are chosen solely based on their highest loadings.
 This may lead to less than ideal referent selection in some situations. It is recommended to always
 compare the resulting  referents with the items one would choose when inspecting the exploratory
-solution loadings (usually with \code{loadings(efa_object)}).
+solution loadings (usually with \code{loadings(efa_object)}). In fact, the user should always check
+\code{loadings(efa_object)} \emph{before} calling the function to be able to specify \code{factor_names} correctly.
 }
 \examples{
 # use Holzinger and Swineford (1939) dataset in lavaan package
@@ -39,7 +40,9 @@ hw_data <- hw_data[,c(7:15)]
 #make exploratory analysis with geomin rotation
 geomin_efa <- esem_efa(hw_data,3)
 
-#find referents
+# check the order of factors in the efa solution
+loadings(geomin_efa)
+#find referents with factors in the order checked above
 find_referents(geomin_efa, c("textual", "visual", "speed"))
 #In this particular case, automatic selection chooses
 #the same items one would choose manually. For comparison:

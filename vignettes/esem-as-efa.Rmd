@@ -77,6 +77,9 @@ However, we will keep the non-bifactor model in this vignette.
 
 Now, for the loading extraction itself with the `esem_efa()` function. We need to supply the data, the number of factors to be extracted and the target rotation matrix.
 ```{r}
+# Specify the efa block.
+# Note that if we continued with the bifactor model 'nfactors' would then be specified as 4 and not 3 due to the G factor being added
+
 efa_block <- esem_efa(data = hw_data,
                       nfactors = 3,
                       target = target_rot)
@@ -143,6 +146,11 @@ Finally, we compose the lavaan syntax with `syntax_composer`:
 # compose lavaan syntax
 model_syntax <- syntax_composer(efa_object = efa_block,
                                 referents = hw_referents)
+
+# altenatively, if you plan fit the model with free factor variance parameters
+#model_syntax_free_var <- syntax_composer(efa_object = efa_block,
+#                                referents = hw_referents,
+#                                only_fix_crossloadings = FALSE)
 ```
 
 
@@ -153,9 +161,24 @@ writeLines(model_syntax)
 We can confirm that the each factor has two fixed parameters (the cross-loadings from the other factors) and all other parameters have the loadings from the EFA as starting points. We are ready to run a CFA in lavaan with this syntax.
 
 ```{r}
-cfa_fit <- lavaan::cfa(model = model_syntax, data = hw_data)
-lavaan::summary(cfa_fit)
+cfa_fit <- lavaan::cfa(model = model_syntax, data = hw_data, std.lv =T)
+lavaan::summary(cfa_fit, fit.measures = TRUE, std = TRUE)
 ```
+
+If you need to fit a model with free factor (residual) variances you'll need to use the function `fit_free_factor_var_esem()`. This function is a wrapper around the `lavaan()` function with the same parameters set in the `cfa()` function, except that the factor variances are free to be estimated and the first indicators in each factor are not automatically fixed. We assume the identification is granted by the fixed referents in the model syntax, which should be the case if you set `only_fix_crossloadings = FALSE` when composing the syntax with `syntax_composer`.
+```{r}
+# cfa_fit <- fit_free_factor_var_esem(model_syntax_free_var, hw_data)
+# lavaan::summary(cfa_fit, fit.measures = TRUE, std = TRUE)
+```
+
+
+## McDonald's Omega
+We can calculate McDonald's omegas using the fitted model and target rotation matrix. Currently, the use of a target rotation matrix is mandatory.
+
+```{r}
+omega_esem(cfa_fit, target_rot)
+```
+
 ## Extending the model
 To modify or extend the model we just need to add more information to the model syntax we already have.
 Let's say we want to estimate the residual covariance between two items, we could do:
@@ -166,30 +189,22 @@ extended_model_syntax <- paste(model_syntax, mod_extension, sep = "\n")
 writeLines(extended_model_syntax)
 ```
 
-The formula `paste(model_syntax, mod_extension, sep = "\n")` can be used iteratively to progressively add extensions to the model, or one can write several extensions between parenthesis and add them to the model in one go.
-
+The formula `paste(model_syntax, mod_extension, sep = "\n")` can be used iteratively to progressively add extensions to the model, or one can write several extensions between quotes and add them to the model in one go.
 
 After extending the model, the new syntax can be used to fit a new model with lavaan's `cfa()` or `sem()` (if your extensions include regressions).
 
 ```{r}
-extended_cfa_fit <- lavaan::cfa(extended_model_syntax, hw_data)
-lavaan::summary(extended_cfa_fit)
+extended_cfa_fit <- lavaan::cfa(extended_model_syntax, hw_data, std.lv = T)
+lavaan::summary(extended_cfa_fit, fit.measures = TRUE, std = TRUE)
 ```
 
 Check lavaan's `lavaanify()` documentation to learn about syntaxes for model extension (covariances, regressions and much more).
 
-## McDonald's Omega
-We can calculate McDonald's omega using the fitted model and target rotation matrix. Currently, the use of a target rotation matrix is mandatory.
-
-```{r}
-omega_esem(extended_cfa_fit, target_rot)
-```
-
 ## Export results
 Result information from the `summary()` may be exported to a text file with the `export_lavaan_results()` function. It is possible to add a preamble to enrich the information in the output.
 
-Since the function runs lavaan's `summary()` before dumping the results, one can add extra results such as modification indices and r-squared measures with the corresponding modifiers to the
-call (the all modifiers are listed in the lavaans `lavaan-class` help).
+Since the function runs lavaan's `summary()` before dumping the results, one can add extra results such as modification indices and r-squared measures by including the corresponding modifiers to the
+call (all possible modifiers are listed in the lavaan's `lavaan-class` help).
 
 ```{r results='hide', eval=FALSE}
 my_preamble <- '

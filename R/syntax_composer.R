@@ -75,14 +75,18 @@
 #' writeLines(model_syntax)
 #'
 #'# esem-within-cfa
-#'esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
+#'esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data, std.lv = TRUE)
 #'summary(esem_w_cfa)
-syntax_composer <- function(efa_object, referents){
+syntax_composer <- function(efa_object, referents, only_fix_crossloadings = TRUE){
 
   loadings_dt <- .make_loadings_dt(efa_object, names(referents))
   # make is_anchor variable
   loadings_dt[, is_anchor := 0]
-  for (l in names(referents)) loadings_dt[latent != l & item == referents[l], is_anchor := 1]
+  if(only_fix_crossloadings){
+    for (l in names(referents)) loadings_dt[latent != l & item == referents[l], is_anchor := 1]
+  }else {
+    for (l in names(referents)) loadings_dt[item == referents[l], is_anchor := 1]
+  }
 
   # make syntax column per item; syntax is different depending on is_anchor
   loadings_dt[is_anchor == 0, syntax := paste0("start(",value,")*", item)]

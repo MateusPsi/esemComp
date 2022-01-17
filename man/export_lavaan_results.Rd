@@ -44,7 +44,7 @@ The \code{path_name} directories must be separated by "\" (even in Windows).
 HS.model <- ' visual  =~ x1 + x2 + x3
 textual =~ x4 + x5 + x6
 speed   =~ x7 + x8 + x9 '
-fit <- lavaan::cfa(HS.model, data= lavaan::HolzingerSwineford1939)
+fit <- lavaan::cfa(HS.model, data= lavaan::HolzingerSwineford1939, std.lv = TRUE)
 
 export_lavaan_results(fit)
 # name the analysis with preamble

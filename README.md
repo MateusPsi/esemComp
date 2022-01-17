@@ -22,7 +22,7 @@ devtools::install_github("MateusPsi/esemComp", build_vignettes = TRUE)
 
 The basic usage of the package follows the steps: make target rotation
 matrix (optional) \> do exploratory factor analysis \> compose syntax \>
-run model in lavaan.
+run model in lavaan \> export results (optional).
 
 ``` r
 library(esemComp)
@@ -67,7 +67,7 @@ writeLines(model_syntax)
 #> start(0.455)*x9
 
 # esem-within-cfa
-esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
+esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data, std.lv = TRUE)
 ```
 
 ``` r

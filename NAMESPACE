@@ -3,6 +3,7 @@
 export(esem_efa)
 export(export_lavaan_results)
 export(find_referents)
+export(fit_free_factor_var_esem)
 export(make_target)
 export(omega_esem)
 export(syntax_composer)

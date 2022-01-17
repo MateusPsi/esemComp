@@ -28,15 +28,31 @@
 #' # McDonald's Omega
 #' omega_esem(fit, target_mat)
 omega_esem <- function(esem_model_fit, target_matrix){
-  target_order <- dimnames(target_matrix)[[2]]
-  loadings <- lavaan::lavInspect(esem_model_fit,"std")[["lambda"]][,target_order]
+  factor_order <- dimnames(target_matrix)[[2]]
+  loadings <- lavaan::lavInspect(esem_model_fit,"std")[["lambda"]][,factor_order]
+
   loadings_sqr <- sum(abs(loadings[is.na(target_matrix)]))^2
 
   res_var <- lavaan::lavInspect(esem_model_fit,"std")[["theta"]]
   res_var <- sum(diag(res_var))
 
-  loadings_sqr*(1/(loadings_sqr+res_var))
+  overall_omega <- loadings_sqr*(1/(loadings_sqr+res_var))
 
+  # per factor
+  factor_omega <- function(factor_name){
+    items_idx <- is.na(target_matrix[,factor_name])
+    loadings <- lavaan::lavInspect(esem_model_fit,"std")[["lambda"]][items_idx,factor_name]
+    loadings_sqr <- sum(abs(loadings))^2
+    res_var <- lavaan::lavInspect(esem_model_fit,"std")[["theta"]][items_idx]
+    res_var <- sum(diag(res_var))
+    loadings_sqr*(1/(loadings_sqr+res_var))
+  }
+
+  names(factor_order) <- factor_order
+  omegas <- sapply(factor_order, factor_omega)
+  omegas[["overall"]] <- overall_omega
+
+  omegas
 }
 
 
@@ -67,7 +83,7 @@ omega_esem <- function(esem_model_fit, target_matrix){
 #' HS.model <- ' visual  =~ x1 + x2 + x3
 #' textual =~ x4 + x5 + x6
 #' speed   =~ x7 + x8 + x9 '
-#' fit <- lavaan::cfa(HS.model, data= lavaan::HolzingerSwineford1939)
+#' fit <- lavaan::cfa(HS.model, data= lavaan::HolzingerSwineford1939, std.lv = TRUE)
 #'
 #' export_lavaan_results(fit)
 #' # name the analysis with preamble
@@ -106,3 +122,43 @@ Perhaps you forgot to finish with '.txt'?"
   }
 }
 
+
+#' Model fitting for free factor variance ESEM
+#'
+#' @param model_syntax An ESEM model fitting create with \cite{syntax_composer()}
+#' and `only_fix_crossloadings = FALSE`.
+#' @param data Data.frame where rows are observations and columns are indicators. Alternatively,
+#' a covariance matrix. If a covariance matrix, `sample.nobs` must be included in `...`
+#' @param ... Other `name = value` pairs to \cite{lavaan::lavaan()}.
+#'
+#'@details Lavaan's \cite{lavaan::cfa()} function automatically fixes the first indicator of
+#'factors when factor (residual) variances are set as free parameters with `std.lv = TRUE`.
+#'The present function is a wrapper around \cite{lavaan::lavaan()} with the same parameters as
+#'the cfa function, except that factor variances are set free and no additional fixing is done.
+#'This allows the correct estimation of ESEM-within-CFA models with free factor variances, granted
+#'that the model syntax was made with \cite{syntax_composer()} with `only_fix_crossloadings = FALSE` and
+#'thus includes the correct number of fixed parameters. See the \cite{esem-as-efa} vignette for an example.
+#'
+#' @return A lavaan object with the fitted model.
+#' @export
+#'
+fit_free_factor_var_esem <- function(model_syntax, data,...){
+  if(!is.matrix(data)){
+    lavaan::lavaan(model = model_syntax, data = data,
+                   int.ov.free = TRUE, int.lv.free = FALSE,
+                   auto.fix.first = FALSE, std.lv = FALSE,
+                   auto.fix.single = TRUE, auto.var = TRUE,
+                   auto.cov.lv.x = TRUE, auto.efa = TRUE,
+                   auto.th = TRUE, auto.delta = TRUE,
+                   auto.cov.y = TRUE,...)
+  }else{
+    lavaan::lavaan(model = model_syntax, sample.cov = data,
+                   int.ov.free = TRUE, int.lv.free = FALSE,
+                   auto.fix.first = FALSE, std.lv = FALSE,
+                   auto.fix.single = TRUE, auto.var = TRUE,
+                   auto.cov.lv.x = TRUE, auto.efa = TRUE,
+                   auto.th = TRUE, auto.delta = TRUE,
+                   auto.cov.y = TRUE,...)
+  }
+
+}

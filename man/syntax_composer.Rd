@@ -4,7 +4,7 @@
 \alias{syntax_composer}
 \title{ESEM-within-CFA syntax composer for lavaan}
 \usage{
-syntax_composer(efa_object, referents)
+syntax_composer(efa_object, referents, only_fix_crossloadings = TRUE)
 }
 \arguments{
 \item{efa_object}{A \cite{psych::fa()} object with the results of a exploratory factor analysis.
@@ -46,7 +46,7 @@ model_syntax <- syntax_composer(geomin_efa, referents_list)
 writeLines(model_syntax)
 
 # esem-within-cfa
-esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
+esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data, std.lv = TRUE)
 summary(esem_w_cfa)
 }
 \seealso{
