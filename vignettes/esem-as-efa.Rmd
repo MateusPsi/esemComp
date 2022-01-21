@@ -158,7 +158,7 @@ Laavan's model syntaxes are nothing more than an (often) long string. The best w
 ```{r}
 writeLines(model_syntax)
 ```
-We can confirm that the each factor has two fixed parameters (the cross-loadings from the other factors) and all other parameters have the loadings from the EFA as starting points. We are ready to run a CFA in lavaan with this syntax.
+We can confirm that the each factor has two fixed parameters (the cross-loadings from the other factors) and all other parameters have the loadings from the EFA as starting points. We are ready to run a CFA in lavaan with this syntax. Alternatively, you can simply copy the syntax and run the model in a lavaan-powered point-and-click software like [JASP](https://jasp-stats.org/) or [JAMOVI](https://www.jamovi.org/) (with the SEM module). Just be sure to check you are using the parametrization that corresponds to the syntax you composed.
 
 ```{r}
 cfa_fit <- lavaan::cfa(model = model_syntax, data = hw_data, std.lv =T)
