@@ -10,8 +10,8 @@ It has helper functions to create target rotation matrices and to run
 
 ## Installation
 
-You can install the development version of esemComp from
-[GitHub](https://github.com/MateusPsi) with:
+You can install esemComp from [GitHub](https://github.com/MateusPsi)
+with:
 
 ``` r
 # install.packages("devtools")
@@ -81,8 +81,7 @@ display of the package logic and capabilities:
 ``` r
 library(esemComp)
 vignette("esem-within-cfa")
-#> Warning: vignette 'esem-within-cfa' not found
 ```
 
 Bug reports, feature requests or contributions are welcome! Get in touch
-in github or by email.
+on github or by email.
