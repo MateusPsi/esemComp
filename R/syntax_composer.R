@@ -1,11 +1,7 @@
 
-#' Make loadings DT
-#' Given a psych::efa object, make a loadings dt for syntax_composer
-#' @param fa_object
-#' @param factor_names
-#'
-#' @return long_loadings data.table
-#'
+# Make loadings DT
+# Given a psych::efa object, make a loadings dt for syntax_composer
+# returns long_loadings data.table
 .make_loadings_dt <- function(fa_object, factor_names){
   factor_names <- unlist(factor_names)
   nrow <- nrow(fa_object$loadings)
