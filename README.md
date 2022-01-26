@@ -75,5 +75,14 @@ esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data, std.lv = TRUE)
 export_lavaan_results(esem_w_cfa)
 ```
 
-Be sure to check the *esem-as-efa* vignette for a more comprehensive
-display of the package logic and capabilities.
+Be sure to check the *esem-within-cfa* vignette for a more comprehensive
+display of the package logic and capabilities:
+
+``` r
+library(esemComp)
+vignette("esem-within-cfa")
+#> Warning: vignette 'esem-within-cfa' not found
+```
+
+Bug reports, feature requests or contributions are welcome! Get in touch
+in github or by email.

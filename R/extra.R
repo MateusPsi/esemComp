@@ -9,7 +9,7 @@
 #' model. The formula is the following:
 #' \deqn{ \omega = |\sum{\lambda_i}|^2 / |\sum{\lambda_i}|^2 + \delta_i_i }
 #' Where  \eqn{\lambda_i} are the factor loadings and \eqn{\delta_i_i}, the error variances.
-#' @return McDonald's Omega values for each factor and overall.
+#' @return McDonald's Omega values for each factor.
 #' @export
 #'
 #' @examples
@@ -31,13 +31,6 @@ omega_esem <- function(esem_model_fit, target_matrix){
   factor_order <- dimnames(target_matrix)[[2]]
   loadings <- lavaan::lavInspect(esem_model_fit,"std")[["lambda"]][,factor_order]
 
-  loadings_sqr <- sum(abs(loadings[is.na(target_matrix)]))^2
-
-  res_var <- lavaan::lavInspect(esem_model_fit,"std")[["theta"]]
-  res_var <- sum(diag(res_var))
-
-  overall_omega <- loadings_sqr*(1/(loadings_sqr+res_var))
-
   # per factor
   factor_omega <- function(factor_name){
     items_idx <- is.na(target_matrix[,factor_name])
@@ -45,12 +38,11 @@ omega_esem <- function(esem_model_fit, target_matrix){
     loadings_sqr <- sum(abs(loadings))^2
     res_var <- lavaan::lavInspect(esem_model_fit,"std")[["theta"]][items_idx]
     res_var <- sum(diag(res_var))
-    loadings_sqr*(1/(loadings_sqr+res_var))
+    round(loadings_sqr*(1/(loadings_sqr+res_var)),3)
   }
 
   names(factor_order) <- factor_order
   omegas <- sapply(factor_order, factor_omega)
-  omegas[["overall"]] <- overall_omega
 
   omegas
 }
