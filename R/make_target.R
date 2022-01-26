@@ -1,5 +1,5 @@
 
-#' Make target
+#' Make target rotation matrix
 #'
 #' @description Make target rotation matrix for use with \cite{esem_efa()}.
 #' @param nitems An integer. The total number of items.

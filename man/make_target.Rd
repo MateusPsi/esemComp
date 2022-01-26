@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_target.R
 \name{make_target}
 \alias{make_target}
-\title{Make target}
+\title{Make target rotation matrix}
 \usage{
 make_target(nitems, mainloadings, bifactor = FALSE)
 }
