@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/404.html</loc>
   </url>
   <url>
-    <loc>/articles/esem-within-cfa.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/articles/esem-within-cfa.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/index.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/reference/esemComp-package.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/esemComp-package.html</loc>
   </url>
   <url>
-    <loc>/reference/esem_efa.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/esem_efa.html</loc>
   </url>
   <url>
-    <loc>/reference/export_lavaan_results.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/export_lavaan_results.html</loc>
   </url>
   <url>
-    <loc>/reference/find_referents.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/find_referents.html</loc>
   </url>
   <url>
-    <loc>/reference/fit_free_factor_var_esem.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/fit_free_factor_var_esem.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make_target.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/make_target.html</loc>
   </url>
   <url>
-    <loc>/reference/omega_esem.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/omega_esem.html</loc>
   </url>
   <url>
-    <loc>/reference/syntax_composer.html</loc>
+    <loc>https://mateuspsi.github.io/esemComp/reference/syntax_composer.html</loc>
   </url>
 </urlset>

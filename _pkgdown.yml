@@ -2,3 +2,9 @@ url: https://mateuspsi.github.io/esemComp
 template:
   bootstrap: 5
 
+footer:
+  structure:
+    left: [developed_by, logo]
+    right: built_with
+  components:
+    logo: icon by Mister Pixel, created with squarespace

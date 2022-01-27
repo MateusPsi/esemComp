@@ -1,5 +1,5 @@
 
-# esemComp
+# esemComp <img src="man/figures/logo.png" align="right" width=150px/>
 
 <!-- badges: start -->
 <!-- badges: end -->
