@@ -25,3 +25,4 @@ Imports:
     rlang,
     glue
 VignetteBuilder: knitr
+URL: https://mateuspsi.github.io/esemComp
