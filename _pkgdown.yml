@@ -8,3 +8,16 @@ footer:
     right: built_with
   components:
     logo: icon by Mister Pixel, created with squarespace
+
+home:
+  title: EsemComp package
+  description: ESEM-within-CFA syntax composer for R
+
+template:
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "ESEM-within-CFA syntax composer for R"
+    twitter:
+      creator: "@mateuspsi"
+      card: summary_large_image
