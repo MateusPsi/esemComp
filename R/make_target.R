@@ -1,9 +1,10 @@
 
-#' Make target
+#' Make target rotation matrix
 #'
 #' @description Make target rotation matrix for use with \cite{esem_efa()}.
 #' @param nitems An integer. The total number of items.
-#' @param mainloadings A list. A list indicating the indexes of the items related to each latent variable. See examples.
+#' @param mainloadings A list. A list indicating the indexes of the items related
+#' to each latent variable in a rotation matrix \[nItems x nLatentVariables\]. See examples.
 #' @param bifactor Logical. If TRUE, adds a G-factor column to the resulting target matrix.
 #'
 #' @details A target rotation matrix is composed of cells indicating which loadings should be freely estimated
@@ -22,6 +23,15 @@
 #' #bifactor matrix for the same dataset
 #' make_target(9, main_loadings_list, TRUE)
 make_target <- function (nitems, mainloadings, bifactor = FALSE){
+  ## check inputs
+  mainloadings_vec <- unlist(mainloadings)
+  expected_mainloadings <- c(1:nitems)
+  if(!all(expected_mainloadings %in% mainloadings_vec) |
+     any(!(mainloadings_vec %in% expected_mainloadings))){
+    abort_bad_indexes(nitems, not = mainloadings_vec)
+  }
+
+  ## make target matrix
   target_mat <- psych::make.keys(nitems, mainloadings)
   if(bifactor) target_mat <- cbind(target_mat, G = 1)
 
@@ -80,6 +90,13 @@ make_target <- function (nitems, mainloadings, bifactor = FALSE){
 #' bifactor_target_mat <- make_target(9, list(f1 = c(1,2,5:7), f2 = c(3,4,8,9)), TRUE)
 #' esem_efa(tucker,3,bifactor_target_mat, maxit = 2000) #maxit needed for convergence
 esem_efa <- function(data,  nfactors, target = "none", bifactor = FALSE, fm = "pa", targetAlgorithm = "targetQ",...){
+  ## check if number of factors is the same in rotation matrix and input
+  if(is.matrix(target)){
+    if(nfactors != ncol(target)){
+      abort_bad_n_esem(ncol(target), nfactors)
+    }
+  }
+
   ifelse(target== "none"
          ,esem_fit <- psych::fa(data, nfactors, fm = fm,
                                 rotate = "geominQ",...)

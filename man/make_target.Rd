@@ -2,14 +2,15 @@
 % Please edit documentation in R/make_target.R
 \name{make_target}
 \alias{make_target}
-\title{Make target}
+\title{Make target rotation matrix}
 \usage{
 make_target(nitems, mainloadings, bifactor = FALSE)
 }
 \arguments{
 \item{nitems}{An integer. The total number of items.}
 
-\item{mainloadings}{A list. A list indicating the indexes of the items related to each latent variable. See examples.}
+\item{mainloadings}{A list. A list indicating the indexes of the items related
+to each latent variable in a rotation matrix [nItems x nLatentVariables]. See examples.}
 
 \item{bifactor}{Logical. If TRUE, adds a G-factor column to the resulting target matrix.}
 }

@@ -1,11 +1,12 @@
 Package: esemComp
 Title: ESEM-within-CFA syntax composer
-Version: 0.1
+Version: 0.2
 Authors@R: c(
     person("Mateus", "Silvestrin", , "mateusilvestrin@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3482-3676")),
-           person("Leon", "T. de Beer", , "abcd@fgh.com", role = c("aut"),
-           comment = c(ORCID = "0000-0001-6900-2192")))
+           person("Leon", "T. de Beer", , "12848417@g.nwu.ac.za", role = c("aut"),
+           comment = c(ORCID = "0000-0001-6900-2192",
+           Instituion= "WorkWell Research Unit, North-West University")))
 Description: Functions to compose ESEM-within-CFA models to run in lavaan. 
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -20,5 +21,7 @@ Imports:
     lavaan,
     data.table,
     GPArotation,
-    psych
+    psych,
+    rlang,
+    glue
 VignetteBuilder: knitr

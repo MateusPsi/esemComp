@@ -10,21 +10,19 @@ It has helper functions to create target rotation matrices and to run
 
 ## Installation
 
-You can install the development version of esemComp from
-[GitHub](https://github.com/MateusPsi) with:
+You can install esemComp from [GitHub](https://github.com/MateusPsi)
+with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("MateusPsi/esemComp", build_vignettes = TRUE)
 ```
 
-Be advised: the package is still in early development stages.
-
 ## Example
 
 The basic usage of the package follows the steps: make target rotation
 matrix (optional) \> do exploratory factor analysis \> compose syntax \>
-run model in lavaan.
+run model in lavaan \> export results (optional).
 
 ``` r
 library(esemComp)
@@ -35,8 +33,8 @@ hw_data <- hw_data[,c(7:15)]
 #make exploratory analysis with geomin rotation
 geomin_efa <- esem_efa(hw_data,3)
 #> Loading required namespace: GPArotation
-referents_vector <- c(textual = "x5", visual = "x3", speed = "x7")
-model_syntax <- syntax_composer(geomin_efa, referents_vector)
+referents_list <- list(textual = "x5", visual = "x3", speed = "x7")
+model_syntax <- syntax_composer(geomin_efa, referents_list)
 writeLines(model_syntax)
 #> textual =~ start(0.193)*x1+
 #> start(0.042)*x2+
@@ -69,5 +67,21 @@ writeLines(model_syntax)
 #> start(0.455)*x9
 
 # esem-within-cfa
-esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data)
+esem_w_cfa <- lavaan::cfa(model_syntax, data = hw_data, std.lv = TRUE)
 ```
+
+``` r
+# save results to a text file
+export_lavaan_results(esem_w_cfa)
+```
+
+Be sure to check the *esem-within-cfa* vignette for a more comprehensive
+display of the package logic and capabilities:
+
+``` r
+library(esemComp)
+vignette("esem-within-cfa")
+```
+
+Bug reports, feature requests or contributions are welcome! Get in touch
+on github or by email.
