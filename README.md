@@ -10,7 +10,7 @@ It has helper functions to create target rotation matrices and to run
 
 ## Installation
 
-You can install esemComp from [GitHub](https://github.com/MateusPsi)
+You can install esemComp from [GitHub](https://github.com/MateusPsi/esemComp)
 with:
 
 ``` r
